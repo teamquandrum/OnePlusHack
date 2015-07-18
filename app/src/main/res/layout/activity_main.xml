@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:card_view="http://schemas.android.com/tools"
+    android:id="@+id/root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/guillotine_background_dark"
+    android:orientation="vertical">
+    <View
+        android:layout_gravity="top"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/guillotine_actionbar_background_view_height"
+        android:background="@color/guillotine_background"
+        />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            app:contentInsetStart="0dp"
+            style="@style/Toolbar">
+
+
+            <com.pes.girish.phonebridge.CanaroTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="PHONE BRIDGE"
+                android:textSize="@dimen/guillotine_item_text_size" />
+        </android.support.v7.widget.Toolbar>
+        <!--
+                <ImageView
+                    style="@style/ImageView.ContentItem"
+                    android:layout_marginTop="@dimen/guillotine_medium_margin"
+                    android:src="@drawable/content_1" />
+
+                <ImageView
+                    style="@style/ImageView.ContentItem"
+                    android:src="@drawable/content_2" />
+        -->
+
+
+
+        <Button
+            android:layout_width="fill_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:text="ASK"
+            style="?android:attr/borderlessButtonStyle"
+            android:textSize="20dp"
+            android:onClick="ask"
+            />
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:src="@drawable/divide"/>
+
+        <Button
+            android:layout_width="fill_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:text="ANSWER"
+            style="?android:attr/borderlessButtonStyle"
+            android:textSize="20dp"
+            android:onClick="answer"
+            />
+    </LinearLayout>
+</FrameLayout>

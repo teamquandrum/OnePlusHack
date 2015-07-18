@@ -41,8 +41,10 @@
         </activity>
         <activity
             android:name=".GcmActivity"
-            android:label="GcmTest" >
-        </activity>
+            android:label="GcmTest" />
+	<activity
+            android:name=".AcceptActivity"
+            android:label="@string/title_activity_accept" />
 
 
         <receiver

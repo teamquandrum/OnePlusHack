@@ -6,4 +6,5 @@
     <string name="title_activity_ask">AskActivity</string>
     <string name="title_activity_answer">AnswerActivity</string>
     <string name="title_activity_waiting">WaitingActivity</string>
+    <string name="title_activity_accept">AcceptActivity</string>
 </resources>

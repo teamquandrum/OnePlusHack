@@ -1,38 +1,24 @@
 package com.quandrum.phonebridge;
 
-import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 
 
-public class MainActivity extends ActionBarActivity {
+public class AcceptActivity extends ActionBarActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        startActivity(new Intent(this, GcmActivity.class));
+        setContentView(R.layout.activity_accept);
     }
 
-    public void ask(View view)
-    {
-        startActivity(new Intent(MainActivity.this, AskActivity.class));
-        finish();
-    }
-
-    public void answer(View view)
-    {
-        startActivity(new Intent(MainActivity.this, AnswerActivity.class));
-        //finish();
-    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
+        getMenuInflater().inflate(R.menu.menu_accept, menu);
         return true;
     }
 

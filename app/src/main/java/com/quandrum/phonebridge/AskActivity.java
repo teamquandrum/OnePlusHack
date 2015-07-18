@@ -1,4 +1,4 @@
-package com.pes.girish.phonebridge;
+package com.quandrum.phonebridge;
 
 import android.content.Context;
 import android.content.Intent;

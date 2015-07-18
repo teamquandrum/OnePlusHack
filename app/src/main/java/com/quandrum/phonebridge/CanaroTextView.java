@@ -1,8 +1,10 @@
-package com.pes.girish.phonebridge;
+package com.quandrum.phonebridge;
 
 import android.content.Context;
 import android.util.AttributeSet;
 import android.widget.TextView;
+
+import com.quandrum.phonebridge.App;
 
 
 /**

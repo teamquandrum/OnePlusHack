@@ -75,7 +75,6 @@
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/exploded-aar/com.android.support/mediarouter-v7/22.0.0/jars" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/exploded-aar/com.android.support/recyclerview-v7/22.2.0/jars" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/exploded-aar/com.android.support/support-v4/22.2.0/jars" />
-      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/exploded-aar/com.github.johnkil.android-appmsg/appmsg/1.2.0/jars" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/exploded-aar/com.google.android.gms/play-services-ads/7.5.0/jars" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/exploded-aar/com.google.android.gms/play-services-analytics/7.5.0/jars" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/exploded-aar/com.google.android.gms/play-services-appindexing/7.5.0/jars" />
@@ -119,16 +118,23 @@
     <orderEntry type="library" exported="" name="mediarouter-v7-22.0.0" level="project" />
     <orderEntry type="library" exported="" name="play-services-drive-7.5.0" level="project" />
     <orderEntry type="library" exported="" name="recyclerview-v7-22.2.0" level="project" />
+    <orderEntry type="library" exported="" name="appmsg-1.2.0" level="project" />
     <orderEntry type="library" exported="" name="support-annotations-22.2.0" level="project" />
+<<<<<<< HEAD
     <orderEntry type="library" exported="" name="play-services-analytics-7.5.0" level="project" />
     <orderEntry type="library" exported="" name="play-services-panorama-7.5.0" level="project" />
+=======
+    <orderEntry type="library" exported="" name="android-async-http-1.4.5" level="project" />
+    <orderEntry type="library" exported="" name="support-v4-22.2.0" level="project" />
+    <orderEntry type="library" exported="" name="Parse-1.9.4" level="project" />
+    <orderEntry type="library" exported="" name="bolts-android-1.2.0" level="project" />
+>>>>>>> c8c98b20582d48cf82d3d177c612519d97aea76d
     <orderEntry type="library" exported="" name="cardview-v7-21.0.3" level="project" />
     <orderEntry type="library" exported="" name="play-services-appindexing-7.5.0" level="project" />
     <orderEntry type="library" exported="" name="appcompat-v7-22.2.0" level="project" />
     <orderEntry type="library" exported="" name="play-services-location-7.5.0" level="project" />
     <orderEntry type="library" exported="" name="play-services-ads-7.5.0" level="project" />
     <orderEntry type="library" exported="" name="play-services-safetynet-7.5.0" level="project" />
-    <orderEntry type="library" exported="" name="appmsg-1.2.0" level="project" />
     <orderEntry type="library" exported="" name="play-services-base-7.5.0" level="project" />
     <orderEntry type="library" exported="" name="play-services-7.5.0" level="project" />
     <orderEntry type="library" exported="" name="Parse-1.9.4" level="project" />
@@ -142,7 +148,6 @@
     <orderEntry type="library" exported="" name="play-services-wearable-7.5.0" level="project" />
     <orderEntry type="library" exported="" name="play-services-appstate-7.5.0" level="project" />
     <orderEntry type="library" exported="" name="play-services-games-7.5.0" level="project" />
-    <orderEntry type="library" exported="" name="android-async-http-1.4.5" level="project" />
     <orderEntry type="library" exported="" name="play-services-identity-7.5.0" level="project" />
     <orderEntry type="library" exported="" name="play-services-maps-7.5.0" level="project" />
   </component>

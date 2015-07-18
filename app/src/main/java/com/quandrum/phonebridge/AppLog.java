@@ -1,4 +1,4 @@
-package com.pes.girish.phonebridge;
+package com.quandrum.phonebridge;
 
 /**
  * Created by Girish on 18-07-2015.

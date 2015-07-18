@@ -1,30 +1,24 @@
-package com.pes.girish.phonebridge;
+package com.quandrum.phonebridge;
 
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import com.devspark.appmsg.AppMsg;
 
-
-public class WaitingActivity extends ActionBarActivity {
+public class AnswerActivity extends ActionBarActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_waiting);
-
-
-        AppMsg.Style style = AppMsg.STYLE_INFO;
-        AppMsg.makeText(WaitingActivity.this, "Thank you. You will be notified when somebody is ready to answer your question.", style).show();
+        setContentView(R.layout.activity_answer);
     }
 
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_waiting, menu);
+        getMenuInflater().inflate(R.menu.menu_answer, menu);
         return true;
     }
 

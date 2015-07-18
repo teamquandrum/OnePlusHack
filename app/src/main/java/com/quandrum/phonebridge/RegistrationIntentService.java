@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package com.pes.girish.phonebridge;
+package com.quandrum.phonebridge;
 
 import android.app.IntentService;
 import android.content.Intent;
@@ -32,7 +32,6 @@ import java.io.IOException;
 public class RegistrationIntentService extends IntentService {
 
     private static final String TAG = "RegIntentService";
-    private static final String[] TOPICS = {"global"};
 
     public RegistrationIntentService() {
         super(TAG);
@@ -51,16 +50,13 @@ public class RegistrationIntentService extends IntentService {
                 // are local.
                 // [START get_token]
                 InstanceID instanceID = InstanceID.getInstance(this);
-                String token = instanceID.getToken(getString(R.string.gcm_defaultSenderId),
+                String token = instanceID.getToken("22849404972",
                         GoogleCloudMessaging.INSTANCE_ID_SCOPE, null);
                 // [END get_token]
                 Log.i(TAG, "GCM Registration Token: " + token);
 
                 // TODO: Implement this method to send any registration to your app's servers.
                 sendRegistrationToServer(token);
-
-                // Subscribe to topic channels
-                subscribeTopics(token);
 
                 // You should store a boolean that indicates whether the generated token has been
                 // sent to your server. If the boolean is false, send the token to your server,
@@ -90,20 +86,5 @@ public class RegistrationIntentService extends IntentService {
     private void sendRegistrationToServer(String token) {
         // Add custom implementation, as needed.
     }
-
-    /**
-     * Subscribe to any GCM topics of interest, as defined by the TOPICS constant.
-     *
-     * @param token GCM token
-     * @throws IOException if unable to reach the GCM PubSub service
-     */
-    // [START subscribe_topics]
-    private void subscribeTopics(String token) throws IOException {
-        for (String topic : TOPICS) {
-            GcmPubSub pubSub = GcmPubSub.getInstance(this);
-            pubSub.subscribe(token, "/topics/" + topic, null);
-        }
-    }
-    // [END subscribe_topics]
 
 }

@@ -208,7 +208,7 @@ public class AskActivity extends ActionBarActivity {
                 params.put("askerid", "10");
 
 
-                client.get("http://192.168.1.104:8080/oneplus/index.php/manager", params, new AsyncHttpResponseHandler() {
+                client.get("http://10.0.0.21:8080/oneplus/index.php/manager", params, new AsyncHttpResponseHandler() {
 
                     @Override
                     public void onStart() {

@@ -33,6 +33,10 @@
             android:name=".WaitingActivity"
             android:label="@string/title_activity_waiting" >
         </activity>
+        <activity
+            android:name=".AcceptActivity"
+            android:label="@string/title_activity_accept" >
+        </activity>
     </application>
 
 </manifest>

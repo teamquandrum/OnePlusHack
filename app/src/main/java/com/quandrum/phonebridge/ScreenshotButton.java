@@ -31,9 +31,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class ServiceFloating extends Service {
+public class ScreenshotButton extends Service {
 
-    private static final String     TAG = ServiceFloating.class.getName();
+    private static final String     TAG = ScreenshotButton.class.getName();
     private static final int        REQUEST_CODE= 100;
     private static MediaProjection MEDIA_PROJECTION;
     private static String           STORE_DIRECTORY;
@@ -155,7 +155,7 @@ public class ServiceFloating extends Service {
                             // If double click...
                             if (pressTime - lastPressTime <= 300) {
                                 //createNotification();
-                                ServiceFloating.this.stopSelf();
+                                ScreenshotButton.this.stopSelf();
                                 mHasDoubleClicked = true;
                             } else {     // If not double click....
                                 mHasDoubleClicked = false;
@@ -191,7 +191,7 @@ public class ServiceFloating extends Service {
                 //				intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_SINGLE_TOP|Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
                 //				getApplicationContext().startActivity(intent);
 
-                Intent dialogIntent = new Intent(ServiceFloating.this, TakeScreenshot.class);
+                Intent dialogIntent = new Intent(ScreenshotButton.this, TakeScreenshot.class);
                 dialogIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 dialogIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(dialogIntent);
@@ -238,7 +238,7 @@ public class ServiceFloating extends Service {
     }
 
     public void createNotification() {
-        Intent notificationIntent = new Intent(getApplicationContext(), ServiceFloating.class);
+        Intent notificationIntent = new Intent(getApplicationContext(), ScreenshotButton.class);
         PendingIntent pendingIntent = PendingIntent.getService(getApplicationContext(), 0, notificationIntent, 0);
 
         Notification notification = new Notification(R.drawable.floating2, "Click to start launcher", System.currentTimeMillis());

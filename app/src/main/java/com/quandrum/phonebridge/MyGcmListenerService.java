@@ -16,44 +16,66 @@
 
 package com.quandrum.phonebridge;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 
 import com.google.android.gms.gcm.GcmListenerService;
+import com.google.android.gms.gcm.GoogleCloudMessaging;
 
 public class MyGcmListenerService extends GcmListenerService {
 
     private static final String TAG = "MyGcmListenerService";
 
-    /**
-     * Called when message is received.
-     *
-     * @param from SenderID of the sender.
-     * @param data Data bundle containing message data as key/value pairs.
-     *             For Set of keys use data.keySet().
-     */
     // [START receive_message]
     @Override
-    public void onMessageReceived(String from, Bundle data) {
-        String message = data.getString("message");
-        Log.d(TAG, "From: " + from);
-        Log.d(TAG, "Message: " + message);
+    public void onMessageReceived(String from, Bundle extras) {
+        GoogleCloudMessaging gcm = GoogleCloudMessaging.getInstance(this);
 
-        /**
-         * Production applications would usually process the message here.
-         * Eg: - Syncing with server.
-         *     - Store message in local database.
-         *     - Update UI.
-         */
+        //URL => Download screenshot
+        if(extras.containsKey("url")){
+            if(ImageViewer.activity == null) {
+                Intent shady = new Intent(getApplicationContext(), ImageViewer.class);
+                shady.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                shady.putExtra("url", extras.getString("url"));
+                shady.putExtra("askerid", extras.getString("askerid"));
+                shady.putExtra("helperid", extras.getString("helperid"));
+                startActivity(shady);
+            }
+            else {
+                Transfer.url = extras.getString("url");
+                ImageViewer.faHandler.sendEmptyMessage(1);
+            }
+        }
 
-        /**
-         * In some cases it may be useful to show a notification indicating to the user
-         * that a message was received.
-         */
-        handleMessage(message);
-    }
+        //x => X and Y co-ordinates of where he needs to tap
+        else if(extras.containsKey("x")){
+            Intent shady = new Intent(getApplicationContext(),ServiceFloating.class);
+            shady.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            Transfer.x = Double.parseDouble(extras.getString("x"));
+            Transfer.y = Double.parseDouble(extras.getString("y"));
+            Log.e("GCM X", ":" + extras.getString("x"));
+            Log.e("GCM Y", ":" + extras.getString("y"));
+            Transfer.helperId = extras.getString("helperid");
+            Transfer.askerId = extras.getString("askerid");
+            stopService(shady);
+            startService(shady);
+        }
 
-    public void handleMessage(String message) {
-        Log.e("gcm-message",message);
+        //Else it needs to send the person to Home Screen to take a screenshot & start file monitor
+        else {
+
+            Intent shady = new Intent(getApplicationContext(), ScreenshotButton.class);
+            shady.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startService(shady);
+
+            Intent startMain = new Intent(Intent.ACTION_MAIN);
+            startMain.addCategory(Intent.CATEGORY_HOME);
+            startMain.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(startMain);
+            Transfer.askerId = extras.getString("askerid");
+            Transfer.helperId = extras.getString("helperid");
+        }
+        Log.e("GCMListener", "we been tickled lads");
     }
 }

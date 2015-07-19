@@ -60,6 +60,7 @@ public class GcmActivity extends AppCompatActivity {
                 } else {
                     mInformationTextView.setText("error");
                 }
+                finish();
             }
         };
         mInformationTextView = (TextView) findViewById(R.id.informationTextView);

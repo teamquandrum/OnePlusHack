@@ -9,9 +9,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.PixelFormat;
-import android.media.ImageReader;
-import android.media.projection.MediaProjection;
-import android.media.projection.MediaProjectionManager;
 import android.os.Handler;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
@@ -31,19 +28,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class ScreenshotButton extends Service {
-
-    private static final String     TAG = ScreenshotButton.class.getName();
-    private static final int        REQUEST_CODE= 100;
-    private static MediaProjection MEDIA_PROJECTION;
-    private static String           STORE_DIRECTORY;
-    private static int              IMAGES_PRODUCED;
-
-    private MediaProjectionManager mProjectionManager;
-    private ImageReader mImageReader;
-    private Handler mHandler;
-    private int                     mWidth;
-    private int                     mHeight;
+public class ServiceFloating extends Service {
 
     public static int ID_NOTIFICATION = 2018;
 
@@ -51,7 +36,6 @@ public class ScreenshotButton extends Service {
     private ImageView chatHead;
     private PopupWindow pwindo;
     SharedPreferences sharedpreferences;
-    public static final String MyPREFERENCES = "MyPrefs";
 
     boolean mHasDoubleClicked = false;
     long lastPressTime;
@@ -68,19 +52,10 @@ public class ScreenshotButton extends Service {
     }
 
     @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
-        super.onStartCommand(intent, flags, startId);
-        return START_NOT_STICKY;
-    }
-
-    @Override
     public void onCreate() {
         super.onCreate();
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-
-        // call for the projection manager
-        mProjectionManager = (MediaProjectionManager) getSystemService(Context.MEDIA_PROJECTION_SERVICE);
 
 		/*RetrievePackages getInstalledPackages = new RetrievePackages(getApplicationContext());
         apps = getInstalledPackages.getInstalledApps(false);
@@ -95,14 +70,21 @@ public class ScreenshotButton extends Service {
 			listCity.add(apps.get(i));
 		}*/
 
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                ServiceFloating.this.stopSelf();
+            }
+        },2000);
+
         windowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
 
         chatHead = new ImageView(this);
 
-        chatHead.setImageResource(R.drawable.floating2);
+        chatHead.setImageResource(R.drawable.floating3);
 
         if (prefs.getString("ICON", "floating2").equals("floating3")) {
-            chatHead.setImageResource(R.drawable.floating3);
+            chatHead.setImageResource(R.drawable.floating4);
         } else if (prefs.getString("ICON", "floating2").equals("floating4")) {
             chatHead.setImageResource(R.drawable.floating4);
         } else if (prefs.getString("ICON", "floating2").equals("floating5")) {
@@ -119,13 +101,13 @@ public class ScreenshotButton extends Service {
                 PixelFormat.TRANSLUCENT);
 
 
-        sharedpreferences = getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
+        sharedpreferences = getSharedPreferences(MainActivity.MyPREFERENCES, Context.MODE_PRIVATE);
 
 
         int height = sharedpreferences.getInt("height",1);
         int width = sharedpreferences.getInt("width", 1);
-        float xx = sharedpreferences.getFloat("x",0.0f);
-        float yy = sharedpreferences.getFloat("y",0.0f);
+        double xx = Transfer.x;
+        double yy = Transfer.y;
 
         Log.e("SINK X", ":" + xx);
         Log.e("SINK Y", ":" + yy);
@@ -135,7 +117,7 @@ public class ScreenshotButton extends Service {
         final int x = (int) (xx * width);
         final int y = (int) (yy * height);
 
-        params.gravity = Gravity.TOP | Gravity.CENTER_HORIZONTAL;
+        params.gravity = Gravity.TOP | Gravity.LEFT;
         params.x = x;
         params.y = y;
 
@@ -161,7 +143,7 @@ public class ScreenshotButton extends Service {
                             // If double click...
                             if (pressTime - lastPressTime <= 300) {
                                 //createNotification();
-                                ScreenshotButton.this.stopSelf();
+                                ServiceFloating.this.stopSelf();
                                 mHasDoubleClicked = true;
                             } else {     // If not double click....
                                 mHasDoubleClicked = false;
@@ -196,13 +178,6 @@ public class ScreenshotButton extends Service {
                 //				Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                 //				intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_SINGLE_TOP|Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
                 //				getApplicationContext().startActivity(intent);
-
-                Intent dialogIntent = new Intent(ScreenshotButton.this, TakeScreenshot.class);
-                dialogIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                dialogIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                startActivity(dialogIntent);
-
-
             }
         });
 
@@ -244,7 +219,7 @@ public class ScreenshotButton extends Service {
     }
 
     public void createNotification() {
-        Intent notificationIntent = new Intent(getApplicationContext(), ScreenshotButton.class);
+        Intent notificationIntent = new Intent(getApplicationContext(), ServiceFloating.class);
         PendingIntent pendingIntent = PendingIntent.getService(getApplicationContext(), 0, notificationIntent, 0);
 
         Notification notification = new Notification(R.drawable.floating2, "Click to start launcher", System.currentTimeMillis());

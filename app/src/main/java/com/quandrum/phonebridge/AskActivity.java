@@ -3,9 +3,9 @@ package com.quandrum.phonebridge;
 import android.content.Context;
 import android.content.Intent;
 import android.media.MediaRecorder;
+import android.os.Bundle;
 import android.os.Environment;
 import android.support.v7.app.ActionBarActivity;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -15,11 +15,9 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
-import com.devspark.appmsg.AppMsg;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
-import com.parse.Parse;
 import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.ParseObject;
@@ -57,9 +55,9 @@ public class AskActivity extends ActionBarActivity {
         context = this;
 
         // Enable Local Datastore.
-        Parse.enableLocalDatastore(this);
+        //Parse.enableLocalDatastore(this);
 
-        Parse.initialize(this, "5WyWNRtjgkV6iIT22R0yp4MEmLRLtYKq8C5vcoaF", "pmLLUFNkSdQL9qskqYJfZvGByboygsp5NZsAyQRZ");
+        //Parse.initialize(this, "5WyWNRtjgkV6iIT22R0yp4MEmLRLtYKq8C5vcoaF", "pmLLUFNkSdQL9qskqYJfZvGByboygsp5NZsAyQRZ");
 
         b1=(ImageButton)findViewById(R.id.imgbtn);
         b1.setOnTouchListener(new View.OnTouchListener() {
@@ -205,10 +203,13 @@ public class AskActivity extends ActionBarActivity {
                 else
                     params.put("content", editText.getText().toString());
 
+                String askerid = this.getSharedPreferences(MainActivity.MyPREFERENCES,Context.MODE_PRIVATE).getString("myid", "10");
+                Transfer.askerId = askerid;
+
                 params.put("askerid", "10");
 
 
-                client.get("http://10.0.0.21:8080/oneplus/index.php/manager", params, new AsyncHttpResponseHandler() {
+                client.get("http://a7ba0cec.ngrok.io/oneplus/index.php/manager", params, new AsyncHttpResponseHandler() {
 
                     @Override
                     public void onStart() {

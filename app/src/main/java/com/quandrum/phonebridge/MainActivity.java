@@ -1,8 +1,12 @@
 package com.quandrum.phonebridge;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.graphics.Point;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.view.Display;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -10,11 +14,27 @@ import android.view.View;
 
 public class MainActivity extends ActionBarActivity {
 
+
+    public static final String MyPREFERENCES = "MyPrefs";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        startActivity(new Intent(this, GcmActivity.class));
+
+        SharedPreferences.Editor editor = getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE).edit();
+        Display display = getWindowManager().getDefaultDisplay();
+        Point size = new Point();
+        display.getSize(size);
+        int width = size.x;
+        int height = size.y;
+
+        editor.putInt("height", height);
+        editor.putInt("width", width);
+        editor.apply();
+
+        if(this.getSharedPreferences(MyPREFERENCES,Context.MODE_PRIVATE).getString("myid",null)==null)
+            startActivity(new Intent(this, GcmActivity.class));
     }
 
     public void ask(View view)
@@ -26,7 +46,7 @@ public class MainActivity extends ActionBarActivity {
     public void answer(View view)
     {
         startActivity(new Intent(MainActivity.this, AnswerActivity.class));
-        //finish();
+        finish();
     }
 
     @Override

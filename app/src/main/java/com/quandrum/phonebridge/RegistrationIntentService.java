@@ -18,18 +18,17 @@
 package com.quandrum.phonebridge;
 
 import android.app.IntentService;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.google.android.gms.iid.InstanceID;
 
-import java.io.IOException;
-
 public class RegistrationIntentService extends IntentService {
+    SharedPreferences sharedPreferences;
 
     private static final String TAG = "RegIntentService";
 
@@ -39,7 +38,7 @@ public class RegistrationIntentService extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        sharedPreferences = getSharedPreferences(MainActivity.MyPREFERENCES, Context.MODE_PRIVATE);
 
         try {
             // In the (unlikely) event that multiple refresh operations occur simultaneously,
@@ -56,7 +55,10 @@ public class RegistrationIntentService extends IntentService {
                 Log.e(TAG, "GCM Registration Token: " + token);
 
                 // TODO: Implement this method to send any registration to your app's servers.
-                sendRegistrationToServer(token);
+                Intent i = new Intent(this, RegisterActivity.class);
+                i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                i.putExtra("token",token);
+                startActivity(i);
 
                 // You should store a boolean that indicates whether the generated token has been
                 // sent to your server. If the boolean is false, send the token to your server,
@@ -73,18 +75,6 @@ public class RegistrationIntentService extends IntentService {
         // Notify UI that registration has completed, so the progress indicator can be hidden.
         Intent registrationComplete = new Intent(QuickstartPreferences.REGISTRATION_COMPLETE);
         LocalBroadcastManager.getInstance(this).sendBroadcast(registrationComplete);
-    }
-
-    /**
-     * Persist registration to third-party servers.
-     *
-     * Modify this method to associate the user's GCM registration token with any server-side account
-     * maintained by your application.
-     *
-     * @param token The new token.
-     */
-    private void sendRegistrationToServer(String token) {
-        Log.e("token", token);
     }
 
 }

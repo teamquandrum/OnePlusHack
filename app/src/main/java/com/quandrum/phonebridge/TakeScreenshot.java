@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
+import android.graphics.BitmapFactory;
 import android.graphics.PixelFormat;
 import android.graphics.Point;
 import android.hardware.display.DisplayManager;
@@ -21,7 +22,18 @@ import android.util.Log;
 import android.view.Display;
 import android.widget.Toast;
 
+import com.loopj.android.http.AsyncHttpClient;
+import com.loopj.android.http.AsyncHttpResponseHandler;
+import com.loopj.android.http.RequestParams;
+import com.parse.ParseException;
+import com.parse.ParseFile;
+import com.parse.ParseObject;
+
+import org.apache.http.Header;
+
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -45,7 +57,12 @@ public class TakeScreenshot extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        // setContentView(R.layout.activity_main);
+
+        //Parse.enableLocalDatastore(this);
+
+
+
 
         // call for the projection manager
         mProjectionManager = (MediaProjectionManager) getSystemService(Context.MEDIA_PROJECTION_SERVICE);
@@ -87,6 +104,7 @@ public class TakeScreenshot extends Activity {
     private class ImageAvailableListener implements ImageReader.OnImageAvailableListener {
         @Override
         public void onImageAvailable(ImageReader reader) {
+            stopProjection();
             /*try {
                 Thread.sleep(3000l);
             } catch (InterruptedException e) {
@@ -99,6 +117,11 @@ public class TakeScreenshot extends Activity {
             try {
                 image = mImageReader.acquireLatestImage();
                 if (image != null && IMAGES_PRODUCED<1) {
+
+
+                    IMAGES_PRODUCED++;
+                    IMAGE_NO++;
+                    Log.e(TAG, "captured image: " + IMAGES_PRODUCED);
                     Image.Plane[] planes = image.getPlanes();
                     ByteBuffer buffer = planes[0].getBuffer();
                     int pixelStride = planes[0].getPixelStride();
@@ -116,10 +139,78 @@ public class TakeScreenshot extends Activity {
 
                     Toast.makeText(TakeScreenshot.this,path,Toast.LENGTH_SHORT).show();
 
-                    IMAGES_PRODUCED++;
-                    IMAGE_NO++;
-                    Log.e(TAG, "captured image: " + IMAGES_PRODUCED);
-                    stopProjection();
+                    FileInputStream streamIn = new FileInputStream(path);
+                    Bitmap bitmap2 = BitmapFactory.decodeStream(streamIn);;
+                    ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                    bitmap2.compress(Bitmap.CompressFormat.PNG, 20, stream);
+                    byte[] data = stream.toByteArray();
+
+
+
+                    ParseObject po = new ParseObject("Image");
+                    po.save();
+                    // Create the ParseFile
+                    ParseFile file = new ParseFile("image.png" , data);
+                    po.put("ImageFile", file);
+
+                    String url = null;
+                    // Upload the file into Parse Cloud
+                    try {
+                        file.save();
+                        url = file.getUrl();
+                        Log.e("URL", url);
+                        po.save();
+                        AsyncHttpClient client = new AsyncHttpClient();
+                        RequestParams params = new RequestParams();
+
+                        params.put("controller", "gcm");
+                        params.put("action", "sendimageurlmessage");
+                        params.put("url", url);
+                        params.put("askerid", "10");
+                        params.put("helperid", "12");
+
+
+                        client.get("http://a7ba0cec.ngrok.io/oneplus/index.php/manager", params, new AsyncHttpResponseHandler() {
+
+                            @Override
+                            public void onStart() {
+                                Toast.makeText(getApplicationContext(), "Sending Image",
+                                        Toast.LENGTH_SHORT).show();
+                                // called before request is started
+                            }
+
+                            @Override
+                            public void onSuccess(int statusCode, Header[] headers, byte[] response) {
+                                // called when response HTTP status is "200 OK"
+                                Toast.makeText(getApplicationContext(), new String(response),
+                                        Toast.LENGTH_SHORT).show();
+                                Log.e("success", new String(response));
+                                //startActivity(new Intent(AskActivity.this, WaitingActivity.class));
+                                //finish();
+                            }
+
+                            @Override
+                            public void onFailure(int statusCode, Header[] headers, byte[] errorResponse, Throwable e) {
+                                // called when response HTTP status is "4XX" (eg. 401, 403, 404)
+                                Toast.makeText(getApplicationContext(), e.toString(),
+                                        Toast.LENGTH_SHORT).show();
+                                Log.e("fail", e.toString());
+                            }
+
+                            @Override
+                            public void onRetry(int retryNo) {
+                                Toast.makeText(getApplicationContext(), "Retrying",
+                                        Toast.LENGTH_SHORT).show();
+                                // called when request is retried
+                            }
+                        });
+
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    } finally {
+                        //Register with the Server
+                    }
+
                 }
 
             } catch (Exception e) {
@@ -175,7 +266,7 @@ public class TakeScreenshot extends Activity {
                 mImageReader.setOnImageAvailableListener(new ImageAvailableListener(), mHandler);
             }
         }
-        finish();
+        //finish();
     }
 
     private void startProjection() {

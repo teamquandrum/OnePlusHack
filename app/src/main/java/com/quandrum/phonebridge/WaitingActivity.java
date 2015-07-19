@@ -1,7 +1,8 @@
 package com.quandrum.phonebridge;
 
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.os.Handler;
+import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -18,6 +19,13 @@ public class WaitingActivity extends ActionBarActivity {
 
         AppMsg.Style style = AppMsg.STYLE_INFO;
         AppMsg.makeText(WaitingActivity.this, "Thank you. You will be notified when somebody is ready to answer your question.", style).show();
+
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                finish();
+            }
+        }, 4000);
     }
 
 

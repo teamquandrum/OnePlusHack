@@ -1,9 +1,8 @@
 package com.quandrum.phonebridge;
 
 import android.content.Context;
-import android.content.Intent;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -11,7 +10,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.OvershootInterpolator;
-import android.widget.EditText;
 import android.widget.Toast;
 
 import com.loopj.android.http.AsyncHttpClient;
@@ -46,6 +44,8 @@ public class AnswerActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_answer);
 
+        //Parse.initialize(this, "5WyWNRtjgkV6iIT22R0yp4MEmLRLtYKq8C5vcoaF", "pmLLUFNkSdQL9qskqYJfZvGByboygsp5NZsAyQRZ");
+
         context = this;
 
         mRecyclerView = (RecyclerView)findViewById(R.id.my_recycler_view);
@@ -67,7 +67,7 @@ public class AnswerActivity extends ActionBarActivity {
         params.put("action", "getallquestions");
 
 
-        client.get("http://10.0.0.21:8080/oneplus/index.php/manager", params, new AsyncHttpResponseHandler() {
+        client.get("http://a7ba0cec.ngrok.io/oneplus/index.php/manager", params, new AsyncHttpResponseHandler() {
 
             @Override
             public void onStart() {
@@ -79,8 +79,8 @@ public class AnswerActivity extends ActionBarActivity {
             @Override
             public void onSuccess(int statusCode, Header[] headers, byte[] response) {
                 // called when response HTTP status is "200 OK"
-                Toast.makeText(getApplicationContext(), new String(response),
-                        Toast.LENGTH_SHORT).show();
+                //Toast.makeText(getApplicationContext(), new String(response),
+                        //Toast.LENGTH_SHORT).show();
 
                 try {
                     //Log.e("JSON", new String(response));
@@ -150,10 +150,70 @@ public class AnswerActivity extends ActionBarActivity {
                 @Override
                 public void onItemClick(int position, View v) {
                     Log.i(LOG_TAG, " Clicked on Item " + position);
-                    startActivity(new Intent(context, AcceptActivity.class));
+/*
+                    Intent i = new Intent(AnswerActivity.this, AcceptActivity.class);
+                    i.putExtra("title", title[position]);
+                    i.putExtra("body", body[position]);
+                    i.putExtra("qid", qid[position]);
+                    i.putExtra("askerid", askerid[position]);
+                    Transfer.askerId=askerid[position];
+                    startActivity(i);
+                    finish();
+                    */
+                    registerNow(qid[position], "12");
                 }
             });
         }
+    }
+
+    public void registerNow(final String qid, String userid) {
+
+
+        //Register with the Server
+        AsyncHttpClient client = new AsyncHttpClient();
+        final RequestParams params = new RequestParams();
+
+        params.put("controller", "offer");
+        params.put("action", "newOffer");
+        params.put("qid", qid);
+        params.put("helperid", "12");
+
+
+
+        client.get("http://a7ba0cec.ngrok.io/oneplus/index.php/manager", params, new AsyncHttpResponseHandler() {
+
+            @Override
+            public void onStart() {
+                Toast.makeText(getApplicationContext(), "Sending Question",
+                        Toast.LENGTH_SHORT).show();
+                Log.e("req", "" + qid);
+            }
+
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, byte[] response) {
+                // called when response HTTP status is "200 OK"
+                Toast.makeText(getApplicationContext(), new String(response),
+                        Toast.LENGTH_SHORT).show();
+                Log.e("fail", new String(response));
+                finish();
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, byte[] errorResponse, Throwable e) {
+                // called when response HTTP status is "4XX" (eg. 401, 403, 404)
+                Toast.makeText(getApplicationContext(), e.toString(),
+                        Toast.LENGTH_SHORT).show();
+                Log.e("fail", e.toString());
+            }
+
+            @Override
+            public void onRetry(int retryNo) {
+                Toast.makeText(getApplicationContext(), "Retrying",
+                        Toast.LENGTH_SHORT).show();
+                // called when request is retried
+            }
+        });
+
     }
 
     private ArrayList<DataObject> getDataSet() {

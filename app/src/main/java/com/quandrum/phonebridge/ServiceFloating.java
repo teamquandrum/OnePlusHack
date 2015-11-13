@@ -237,4 +237,11 @@ public class ServiceFloating extends Service {
         if (chatHead != null) windowManager.removeView(chatHead);
     }
 
+    @Override
+    public boolean stopService(Intent name) {
+        // TODO Auto-generated method stub
+        stopSelf();
+        return super.stopService(name);
+    }
+
 }

@@ -40,12 +40,12 @@ public class AskActivity extends ActionBarActivity {
     private static final String AUDIO_RECORDER_FOLDER = "AudioRecorder";
     private MediaRecorder recorder = null;
     private int currentFormat = 0;
-    private int output_formats[] = { MediaRecorder.OutputFormat.MPEG_4,             MediaRecorder.OutputFormat.THREE_GPP };
-    private String file_exts[] = { AUDIO_RECORDER_FILE_EXT_MP4, AUDIO_RECORDER_FILE_EXT_3GP };
+    private int output_formats[] = {MediaRecorder.OutputFormat.MPEG_4, MediaRecorder.OutputFormat.THREE_GPP};
+    private String file_exts[] = {AUDIO_RECORDER_FILE_EXT_MP4, AUDIO_RECORDER_FILE_EXT_3GP};
 
     Context context;
 
-    int flag=0;
+    int flag = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,13 +59,13 @@ public class AskActivity extends ActionBarActivity {
 
         //Parse.initialize(this, "5WyWNRtjgkV6iIT22R0yp4MEmLRLtYKq8C5vcoaF", "pmLLUFNkSdQL9qskqYJfZvGByboygsp5NZsAyQRZ");
 
-        b1=(ImageButton)findViewById(R.id.imgbtn);
+        b1 = (ImageButton) findViewById(R.id.imgbtn);
         b1.setOnTouchListener(new View.OnTouchListener() {
 
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 // TODO Auto-generated method stub
-                switch(event.getAction()){
+                switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
                         AppLog.logString("Start Recording");
                         startRecording();
@@ -73,7 +73,7 @@ public class AskActivity extends ActionBarActivity {
                     case MotionEvent.ACTION_UP:
                         AppLog.logString("Stop Recording");
                         stopRecording();
-                        flag=1;
+                        flag = 1;
                         break;
                 }
                 return false;
@@ -81,26 +81,27 @@ public class AskActivity extends ActionBarActivity {
         });
     }
 
-    public void submit(View view)
-    {
+    public void submit(View view) {
         String filepath = Environment.getExternalStorageDirectory().getPath();
-        File file = new File(filepath,AUDIO_RECORDER_FOLDER);
+        File file = new File(filepath, AUDIO_RECORDER_FOLDER);
         String fileName = "recording";
         ParseObject testObject = new ParseObject("Audio");
         File f = new File(file.getAbsolutePath() + "/" + fileName + file_exts[currentFormat]);
         uploadAudioToParse(f, testObject, "AudioFile");
     }
-    private String getFilename(){
-        String filepath = Environment.getExternalStorageDirectory().getPath();
-        File file = new File(filepath,AUDIO_RECORDER_FOLDER);
 
-        if(!file.exists()){
+    private String getFilename() {
+        String filepath = Environment.getExternalStorageDirectory().getPath();
+        File file = new File(filepath, AUDIO_RECORDER_FOLDER);
+
+        if (!file.exists()) {
             file.mkdirs();
         }
         String fileName = "recording";
         return (file.getAbsolutePath() + "/" + fileName + file_exts[currentFormat]);
     }
-    private void startRecording(){
+
+    private void startRecording() {
         recorder = new MediaRecorder();
         recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
         recorder.setOutputFormat(output_formats[currentFormat]);
@@ -118,7 +119,8 @@ public class AskActivity extends ActionBarActivity {
             e.printStackTrace();
         }
     }
-    private MediaRecorder.OnErrorListener errorListener = new        MediaRecorder.OnErrorListener() {
+
+    private MediaRecorder.OnErrorListener errorListener = new MediaRecorder.OnErrorListener() {
         @Override
         public void onError(MediaRecorder mr, int what, int extra) {
             AppLog.logString("Error: " + what + ", " + extra);
@@ -131,8 +133,9 @@ public class AskActivity extends ActionBarActivity {
             AppLog.logString("Warning: " + what + ", " + extra);
         }
     };
-    private void stopRecording(){
-        if(null != recorder){
+
+    private void stopRecording() {
+        if (null != recorder) {
             recorder.stop();
             recorder.reset();
             recorder.release();
@@ -142,9 +145,9 @@ public class AskActivity extends ActionBarActivity {
     }
 
 
-    private ParseObject uploadAudioToParse(File audioFile, ParseObject po, String columnName){
+    private ParseObject uploadAudioToParse(File audioFile, ParseObject po, String columnName) {
 
-        if(audioFile != null){
+        if (audioFile != null) {
             Log.d("EB", "audioFile is not NULL: " + audioFile.toString());
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             BufferedInputStream in = null;
@@ -156,8 +159,7 @@ public class AskActivity extends ActionBarActivity {
             int read;
             byte[] buff = new byte[1024];
             try {
-                while ((read = in.read(buff)) > 0)
-                {
+                while ((read = in.read(buff)) > 0) {
                     out.write(buff, 0, read);
                 }
             } catch (IOException e) {
@@ -171,7 +173,7 @@ public class AskActivity extends ActionBarActivity {
             byte[] audioBytes = out.toByteArray();
 
             // Create the ParseFile
-            ParseFile file = new ParseFile(audioFile.getName() , audioBytes);
+            ParseFile file = new ParseFile(audioFile.getName(), audioBytes);
             po.put(columnName, file);
 
             String url = null;
@@ -190,26 +192,26 @@ public class AskActivity extends ActionBarActivity {
 
                 params.put("controller", "question");
                 params.put("action", "newQuestion");
-                if(flag==1)
+                if (flag == 1)
                     params.put("url", url);
                 else
                     params.put("url", "");
 
-                EditText editText = (EditText)findViewById(R.id.editText);
+                EditText editText = (EditText) findViewById(R.id.editText);
 
 
-                if(editText.getText().length()==0)
+                if (editText.getText().length() == 0)
                     params.put("content", "");
                 else
                     params.put("content", editText.getText().toString());
 
-                String askerid = this.getSharedPreferences(MainActivity.MyPREFERENCES,Context.MODE_PRIVATE).getString("myid", "10");
+                String askerid = this.getSharedPreferences(MainActivity.MyPREFERENCES, Context.MODE_PRIVATE).getString("myid", "10");
                 Transfer.askerId = askerid;
 
-                params.put("askerid", "10");
+                params.put("askerid", askerid);
 
 
-                client.get("http://a7ba0cec.ngrok.io/oneplus/index.php/manager", params, new AsyncHttpResponseHandler() {
+                client.get(Transfer.URL, params, new AsyncHttpResponseHandler() {
 
                     @Override
                     public void onStart() {
@@ -223,6 +225,8 @@ public class AskActivity extends ActionBarActivity {
                         // called when response HTTP status is "200 OK"
                         Toast.makeText(getApplicationContext(), new String(response),
                                 Toast.LENGTH_SHORT).show();
+
+                        Log.e("Hi",new String(response));
 
                         startActivity(new Intent(AskActivity.this, WaitingActivity.class));
                         finish();

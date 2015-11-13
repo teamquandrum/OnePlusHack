@@ -47,11 +47,11 @@ public class AcceptActivity extends ActionBarActivity {
         params.put("controller", "offer");
         params.put("action", "newOffer");
         params.put("qid", qid);
-        params.put("helperid", "12");
+        params.put("helperid", userid);
 
 
 
-        client.get("http://a7ba0cec.ngrok.io/oneplus/index.php/manager", params, new AsyncHttpResponseHandler() {
+        client.get(Transfer.URL, params, new AsyncHttpResponseHandler() {
 
             @Override
             public void onStart() {

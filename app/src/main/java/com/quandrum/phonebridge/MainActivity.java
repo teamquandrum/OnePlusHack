@@ -22,6 +22,10 @@ public class MainActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        /**
+         * Check if the user is already registered
+         */
+
         SharedPreferences.Editor editor = getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE).edit();
         Display display = getWindowManager().getDefaultDisplay();
         Point size = new Point();
@@ -40,13 +44,13 @@ public class MainActivity extends ActionBarActivity {
     public void ask(View view)
     {
         startActivity(new Intent(MainActivity.this, AskActivity.class));
-        finish();
+        //finish();
     }
 
     public void answer(View view)
     {
         startActivity(new Intent(MainActivity.this, AnswerActivity.class));
-        finish();
+        //finish();
     }
 
     @Override

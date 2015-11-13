@@ -33,33 +33,29 @@ import java.util.List;
 
 public class ScreenshotButton extends Service {
 
-    private static final String     TAG = ScreenshotButton.class.getName();
-    private static final int        REQUEST_CODE= 100;
+    public static final String MyPREFERENCES = "MyPrefs";
+    private static final String TAG = ScreenshotButton.class.getName();
+    private static final int REQUEST_CODE = 100;
+    public static Context context;
+    public static int ID_NOTIFICATION = 2018;
     private static MediaProjection MEDIA_PROJECTION;
-    private static String           STORE_DIRECTORY;
-    private static int              IMAGES_PRODUCED;
-
+    private static String STORE_DIRECTORY;
+    private static int IMAGES_PRODUCED;
+    SharedPreferences sharedpreferences;
+    boolean mHasDoubleClicked = false;
+    long lastPressTime;
+    ArrayList<String> myArray;
+    //ArrayList<PInfo> apps;
+    List listCity;
     private MediaProjectionManager mProjectionManager;
     private ImageReader mImageReader;
     private Handler mHandler;
-    private int                     mWidth;
-    private int                     mHeight;
-
-    public static int ID_NOTIFICATION = 2018;
-
+    private int mWidth;
+    private int mHeight;
     private WindowManager windowManager;
     private ImageView chatHead;
     private PopupWindow pwindo;
-    SharedPreferences sharedpreferences;
-    public static final String MyPREFERENCES = "MyPrefs";
-
-    boolean mHasDoubleClicked = false;
-    long lastPressTime;
     private Boolean _enable = true;
-
-    ArrayList<String> myArray;
-   //ArrayList<PInfo> apps;
-    List listCity;
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -122,10 +118,10 @@ public class ScreenshotButton extends Service {
         sharedpreferences = getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
 
 
-        int height = sharedpreferences.getInt("height",1);
+        int height = sharedpreferences.getInt("height", 1);
         int width = sharedpreferences.getInt("width", 1);
-        float xx = sharedpreferences.getFloat("x",0.0f);
-        float yy = sharedpreferences.getFloat("y",0.0f);
+        float xx = sharedpreferences.getFloat("x", 0.0f);
+        float yy = sharedpreferences.getFloat("y", 0.0f);
 
         Log.e("SINK X", ":" + xx);
         Log.e("SINK Y", ":" + yy);
@@ -260,6 +256,13 @@ public class ScreenshotButton extends Service {
     public void onDestroy() {
         super.onDestroy();
         if (chatHead != null) windowManager.removeView(chatHead);
+    }
+
+    @Override
+    public boolean stopService(Intent name) {
+        // TODO Auto-generated method stub
+        stopSelf();
+        return super.stopService(name);
     }
 
 }

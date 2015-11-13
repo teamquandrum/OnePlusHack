@@ -1,6 +1,7 @@
 package com.quandrum.phonebridge;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -31,8 +32,9 @@ public class AnswerActivity extends ActionBarActivity {
     String body[];
     String askerid[];
     String qid[];
-
+    String myid;
     Context context;
+    SharedPreferences sharedpreferences;
 
     private RecyclerView mRecyclerView;
     private RecyclerView.Adapter mAdapter;
@@ -43,6 +45,9 @@ public class AnswerActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_answer);
+
+        sharedpreferences = getSharedPreferences(MainActivity.MyPREFERENCES, Context.MODE_PRIVATE);
+        myid = sharedpreferences.getString("myid", "12");
 
         //Parse.initialize(this, "5WyWNRtjgkV6iIT22R0yp4MEmLRLtYKq8C5vcoaF", "pmLLUFNkSdQL9qskqYJfZvGByboygsp5NZsAyQRZ");
 
@@ -67,7 +72,7 @@ public class AnswerActivity extends ActionBarActivity {
         params.put("action", "getallquestions");
 
 
-        client.get("http://a7ba0cec.ngrok.io/oneplus/index.php/manager", params, new AsyncHttpResponseHandler() {
+        client.get(Transfer.URL, params, new AsyncHttpResponseHandler() {
 
             @Override
             public void onStart() {
@@ -160,7 +165,7 @@ public class AnswerActivity extends ActionBarActivity {
                     startActivity(i);
                     finish();
                     */
-                    registerNow(qid[position], "12");
+                    registerNow(qid[position], myid);
                 }
             });
         }
@@ -176,11 +181,11 @@ public class AnswerActivity extends ActionBarActivity {
         params.put("controller", "offer");
         params.put("action", "newOffer");
         params.put("qid", qid);
-        params.put("helperid", "12");
+        params.put("helperid", userid);
 
 
 
-        client.get("http://a7ba0cec.ngrok.io/oneplus/index.php/manager", params, new AsyncHttpResponseHandler() {
+        client.get(Transfer.URL, params, new AsyncHttpResponseHandler() {
 
             @Override
             public void onStart() {

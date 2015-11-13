@@ -21,7 +21,6 @@ public class App extends Application {
         Parse.initialize(this, "5WyWNRtjgkV6iIT22R0yp4MEmLRLtYKq8C5vcoaF", "pmLLUFNkSdQL9qskqYJfZvGByboygsp5NZsAyQRZ");
 
 
-
     }
 
     private void initTypeface() {

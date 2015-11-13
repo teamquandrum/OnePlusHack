@@ -45,7 +45,7 @@ public class RegisterActivity extends ActionBarActivity {
         params.put("gcmregid",token);
         params.put("model", device);
 
-        client.get("http://a7ba0cec.ngrok.io/oneplus/index.php/manager", params, new AsyncHttpResponseHandler() {
+        client.get(Transfer.URL, params, new AsyncHttpResponseHandler() {
 
             @Override
             public void onStart() {

@@ -32,7 +32,7 @@ public class MyGcmListenerService extends GcmListenerService {
     public void onMessageReceived(String from, Bundle extras) {
         GoogleCloudMessaging gcm = GoogleCloudMessaging.getInstance(this);
 
-        //URL => Download screenshot
+        //URL => Download screenshot => I am the helper
         if(extras.containsKey("url")){
             if(ImageViewer.activity == null) {
                 Intent shady = new Intent(getApplicationContext(), ImageViewer.class);
@@ -48,7 +48,7 @@ public class MyGcmListenerService extends GcmListenerService {
             }
         }
 
-        //x => X and Y co-ordinates of where he needs to tap
+        //x => X and Y co-ordinates of where he needs to tap, i.e. I am the asker
         else if(extras.containsKey("x")){
             Intent shady = new Intent(getApplicationContext(),ServiceFloating.class);
             shady.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -62,20 +62,19 @@ public class MyGcmListenerService extends GcmListenerService {
             startService(shady);
         }
 
-        //Else it needs to send the person to Home Screen to take a screenshot & start file monitor
+        //Else it needs to send the person to Home Screen to take a screenshot & start file monitor, i.e. I am the asker
         else {
-
-            Intent shady = new Intent(getApplicationContext(), ScreenshotButton.class);
-            shady.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            startService(shady);
-
-            Intent startMain = new Intent(Intent.ACTION_MAIN);
-            startMain.addCategory(Intent.CATEGORY_HOME);
-            startMain.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            startActivity(startMain);
+            //Assured to be called if I am being helped
             Transfer.askerId = extras.getString("askerid");
             Transfer.helperId = extras.getString("helperid");
+            Intent shady = new Intent(getApplicationContext(), Creator.class);
+            shady.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(shady);
+
         }
         Log.e("GCMListener", "we been tickled lads");
     }
+
+
+
 }

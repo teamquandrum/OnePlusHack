@@ -35,12 +35,21 @@ public class ImageViewer extends Activity implements View.OnTouchListener {
     Bitmap bitmap;
     ProgressDialog pDialog;
 
+    public static void downloadImage(String url, String aid, String hid) {
+        askerid = aid;
+        helperid = hid;
+        Ion.with(img)
+                .placeholder(R.drawable.floating2)
+                .error(R.drawable.floating3)
+                .load(url);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         faHandler = new Handler() {
             @Override
             public void handleMessage(Message msg) {
-                downloadImage(Transfer.url, "10", "12");
+                downloadImage(Transfer.url, askerid, helperid);
             }
         };
         Intent intent = getIntent();
@@ -66,17 +75,6 @@ public class ImageViewer extends Activity implements View.OnTouchListener {
         super.onCreate(savedInstanceState);
     }
 
-    public static void downloadImage(String url, String aid, String hid) {
-        askerid = aid;
-        helperid = hid;
-        Ion.with(img)
-                .placeholder(R.drawable.floating2)
-                .error(R.drawable.floating3)
-                .load(url);
-    }
-
-
-
     @Override
     public void onResume() {
         super.onResume();
@@ -91,7 +89,7 @@ public class ImageViewer extends Activity implements View.OnTouchListener {
 
 
     @Override
-    public boolean onTouch (View v, MotionEvent event){
+    public boolean onTouch(View v, MotionEvent event) {
         int[] viewCoords = new int[2];
         img.getLocationOnScreen(viewCoords);
         float imageX = (event.getX() - values[2]) / values[0];
@@ -107,28 +105,25 @@ public class ImageViewer extends Activity implements View.OnTouchListener {
         AsyncHttpClient client = new AsyncHttpClient();
         RequestParams params = new RequestParams();
 
-        params.put("controller","gcm");
-        params.put("action","sendCoordMessage");
-        params.put("askerid",askerid);
-        params.put("helperid",helperid);
-        params.put("x",imageX);
-        params.put("y",imageY);
+        params.put("controller", "gcm");
+        params.put("action", "sendCoordMessage");
+        params.put("askerid", askerid);
+        params.put("helperid", helperid);
+        params.put("x", imageX);
+        params.put("y", imageY);
 
 
-        client.get("http://a7ba0cec.ngrok.io/oneplus/index.php/manager", params, new AsyncHttpResponseHandler() {
-
+        client.get(Transfer.URL, params, new AsyncHttpResponseHandler() {
             @Override
             public void onStart() {
                 Toast.makeText(getApplicationContext(), "Contacting Server!",
                         Toast.LENGTH_SHORT).show();
                 // called before request is started
             }
-
             @Override
             public void onSuccess(int statusCode, Header[] headers, byte[] response) {
                 Toast.makeText(ImageViewer.this, "success", Toast.LENGTH_SHORT).show();
             }
-
             @Override
             public void onFailure(int statusCode, Header[] headers, byte[] errorResponse, Throwable e) {
                 // called when response HTTP status is "4XX" (eg. 401, 403, 404)
@@ -136,7 +131,6 @@ public class ImageViewer extends Activity implements View.OnTouchListener {
                         Toast.LENGTH_SHORT).show();
                 e.printStackTrace();
             }
-
             @Override
             public void onRetry(int retryNo) {
                 Toast.makeText(getApplicationContext(), "Retrying",
@@ -144,12 +138,10 @@ public class ImageViewer extends Activity implements View.OnTouchListener {
                 // called when request is retried
             }
         });
-
         return false;
     }
 
     public void onPosty() {
-
         values = new float[9];
         img.getMatrix().getValues(values);
         img.setOnTouchListener(ImageViewer.this);

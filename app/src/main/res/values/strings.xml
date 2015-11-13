@@ -8,4 +8,6 @@
     <string name="title_activity_waiting">WaitingActivity</string>
     <string name="title_activity_accept">AcceptActivity</string>
     <string name="title_activity_register">RegisterActivity</string>
+    <string name="title_activity_splash">Splash</string>
+    <string name="title_activity_creator">Creator</string>
 </resources>

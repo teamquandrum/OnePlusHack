@@ -18,7 +18,6 @@ import android.widget.TextView;
 
 import com.koushikdutta.async.future.FutureCallback;
 import com.koushikdutta.ion.Ion;
-import com.koushikdutta.ion.ProgressCallback;
 
 import java.io.File;
 import java.io.IOException;
@@ -28,37 +27,16 @@ public class MyRecyclerViewAdapter extends RecyclerView
         .Adapter<MyRecyclerViewAdapter
         .DataObjectHolder> {
     private static String LOG_TAG = "MyRecyclerViewAdapter";
-    private ArrayList<DataObject> mDataset;
     private static MyClickListener myClickListener;
+    int pos;
+    private ArrayList<DataObject> mDataset;
 
-    public static class DataObjectHolder extends RecyclerView.ViewHolder
-            implements View
-            .OnClickListener {
-        TextView label;
-        TextView dateTime;
-        ImageButton imageButton;
-
-        public DataObjectHolder(final View itemView) {
-            super(itemView);
-            label = (TextView) itemView.findViewById(R.id.textView);
-            dateTime = (TextView) itemView.findViewById(R.id.textView2);
-            Log.i(LOG_TAG, "Adding Listener");
-            itemView.setOnClickListener(this);
-
-        }
-
-        @Override
-        public void onClick(View v) {
-            myClickListener.onItemClick(getAdapterPosition(), v);
-        }
+    public MyRecyclerViewAdapter(ArrayList<DataObject> myDataset) {
+        mDataset = myDataset;
     }
 
     public void setOnItemClickListener(MyClickListener myClickListener) {
         this.myClickListener = myClickListener;
-    }
-
-    public MyRecyclerViewAdapter(ArrayList<DataObject> myDataset) {
-        mDataset = myDataset;
     }
 
     @Override
@@ -149,9 +127,32 @@ public class MyRecyclerViewAdapter extends RecyclerView
         public void onItemClick(int position, View v);
     }
 
+    public static class DataObjectHolder extends RecyclerView.ViewHolder
+            implements View
+            .OnClickListener {
+        TextView label;
+        TextView dateTime;
+        ImageButton imageButton;
+
+        public DataObjectHolder(final View itemView) {
+            super(itemView);
+            label = (TextView) itemView.findViewById(R.id.textView);
+            dateTime = (TextView) itemView.findViewById(R.id.textView2);
+            Log.i(LOG_TAG, "Adding Listener");
+            itemView.setOnClickListener(this);
+
+        }
+
+        @Override
+        public void onClick(View v) {
+            myClickListener.onItemClick(getAdapterPosition(), v);
+        }
+    }
+
     private class MyTask extends AsyncTask<String, Integer, String> {
 
         MediaPlayer player;
+
         // Runs in UI before background thread is called
         @Override
         protected void onPreExecute() {
@@ -206,5 +207,4 @@ public class MyRecyclerViewAdapter extends RecyclerView
             // Do things like hide the progress bar or change a TextView
         }
     }
-    int pos;
 }

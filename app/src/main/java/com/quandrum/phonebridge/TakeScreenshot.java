@@ -3,6 +3,7 @@ package com.quandrum.phonebridge;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
 import android.graphics.BitmapFactory;
@@ -41,18 +42,24 @@ import java.nio.ByteBuffer;
 
 public class TakeScreenshot extends Activity {
 
-    private static final String     TAG = TakeScreenshot.class.getName();
-    private static final int        REQUEST_CODE= 100;
-    private static MediaProjection  MEDIA_PROJECTION;
-    private static String           STORE_DIRECTORY;
-    private int              IMAGES_PRODUCED;
-    private static int IMAGE_NO;
+    /**
+     * If you are taking a screenshot, it means you are the asker
+     * We need to pass the helper-id to this class
+     */
 
-    private MediaProjectionManager  mProjectionManager;
-    private ImageReader             mImageReader;
-    private Handler                 mHandler;
-    private int                     mWidth;
-    private int                     mHeight;
+    private static final String TAG = TakeScreenshot.class.getName();
+    private static final int REQUEST_CODE = 100;
+    private static MediaProjection MEDIA_PROJECTION;
+    private static String STORE_DIRECTORY;
+    private static int IMAGE_NO;
+    private int IMAGES_PRODUCED;
+    private MediaProjectionManager mProjectionManager;
+    private ImageReader mImageReader;
+    private Handler mHandler;
+    private int mWidth;
+    private int mHeight;
+    private SharedPreferences sharedpreferences;
+    private String myid;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,7 +68,8 @@ public class TakeScreenshot extends Activity {
 
         //Parse.enableLocalDatastore(this);
 
-
+        sharedpreferences = getSharedPreferences(MainActivity.MyPREFERENCES, Context.MODE_PRIVATE);
+        myid = sharedpreferences.getString("myid", "12");
 
 
         // call for the projection manager
@@ -101,6 +109,52 @@ public class TakeScreenshot extends Activity {
         }.start();
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == REQUEST_CODE) {
+            MEDIA_PROJECTION = mProjectionManager.getMediaProjection(resultCode, data);
+
+            if (MEDIA_PROJECTION != null) {
+                STORE_DIRECTORY = Environment.getExternalStorageDirectory().getAbsolutePath() + "/OnePlus/";
+                File storeDirectory = new File(STORE_DIRECTORY);
+                if (!storeDirectory.exists()) {
+                    boolean success = storeDirectory.mkdirs();
+                    if (!success) {
+                        Log.e(TAG, "failed to create file storage directory.");
+                        return;
+                    }
+                }
+
+                DisplayMetrics metrics = getResources().getDisplayMetrics();
+                int density = metrics.densityDpi;
+                int flags = DisplayManager.VIRTUAL_DISPLAY_FLAG_OWN_CONTENT_ONLY | DisplayManager.VIRTUAL_DISPLAY_FLAG_PUBLIC;
+                Display display = getWindowManager().getDefaultDisplay();
+                Point size = new Point();
+                display.getSize(size);
+                mWidth = size.x;
+                mHeight = size.y;
+
+                mImageReader = ImageReader.newInstance(mWidth, mHeight, PixelFormat.RGBA_8888, 2);
+                MEDIA_PROJECTION.createVirtualDisplay("screencap", mWidth, mHeight, density, flags, mImageReader.getSurface(), null, mHandler);
+                mImageReader.setOnImageAvailableListener(new ImageAvailableListener(), mHandler);
+            }
+        }
+        //finish();
+    }
+
+    private void startProjection() {
+        startActivityForResult(mProjectionManager.createScreenCaptureIntent(), REQUEST_CODE);
+    }
+
+    private void stopProjection() {
+        mHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                if (MEDIA_PROJECTION != null) MEDIA_PROJECTION.stop();
+            }
+        });
+    }
+
     private class ImageAvailableListener implements ImageReader.OnImageAvailableListener {
         @Override
         public void onImageAvailable(ImageReader reader) {
@@ -116,7 +170,7 @@ public class TakeScreenshot extends Activity {
 
             try {
                 image = mImageReader.acquireLatestImage();
-                if (image != null && IMAGES_PRODUCED<1) {
+                if (image != null && IMAGES_PRODUCED < 1) {
 
 
                     IMAGES_PRODUCED++;
@@ -137,20 +191,20 @@ public class TakeScreenshot extends Activity {
                     fos = new FileOutputStream(path);
                     bitmap.compress(CompressFormat.JPEG, 50, fos);
 
-                    Toast.makeText(TakeScreenshot.this,path,Toast.LENGTH_SHORT).show();
+                    Toast.makeText(TakeScreenshot.this, path, Toast.LENGTH_SHORT).show();
 
                     FileInputStream streamIn = new FileInputStream(path);
-                    Bitmap bitmap2 = BitmapFactory.decodeStream(streamIn);;
+                    Bitmap bitmap2 = BitmapFactory.decodeStream(streamIn);
+                    ;
                     ByteArrayOutputStream stream = new ByteArrayOutputStream();
                     bitmap2.compress(Bitmap.CompressFormat.PNG, 20, stream);
                     byte[] data = stream.toByteArray();
 
 
-
                     ParseObject po = new ParseObject("Image");
                     po.save();
                     // Create the ParseFile
-                    ParseFile file = new ParseFile("image.png" , data);
+                    ParseFile file = new ParseFile("image.png", data);
                     po.put("ImageFile", file);
 
                     String url = null;
@@ -166,11 +220,11 @@ public class TakeScreenshot extends Activity {
                         params.put("controller", "gcm");
                         params.put("action", "sendimageurlmessage");
                         params.put("url", url);
-                        params.put("askerid", "10");
-                        params.put("helperid", "12");
+                        params.put("askerid", myid);
+                        params.put("helperid", Transfer.helperId);
 
 
-                        client.get("http://a7ba0cec.ngrok.io/oneplus/index.php/manager", params, new AsyncHttpResponseHandler() {
+                        client.get(Transfer.URL, params, new AsyncHttpResponseHandler() {
 
                             @Override
                             public void onStart() {
@@ -216,7 +270,7 @@ public class TakeScreenshot extends Activity {
             } catch (Exception e) {
                 e.printStackTrace();
             } finally {
-                if (fos!=null) {
+                if (fos != null) {
                     try {
                         fos.close();
                     } catch (IOException ioe) {
@@ -224,61 +278,15 @@ public class TakeScreenshot extends Activity {
                     }
                 }
 
-                if (bitmap!=null) {
+                if (bitmap != null) {
                     bitmap.recycle();
                 }
 
-                if (image!=null) {
+                if (image != null) {
                     image.close();
                 }
             }
 
         }
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == REQUEST_CODE) {
-            MEDIA_PROJECTION = mProjectionManager.getMediaProjection(resultCode, data);
-
-            if (MEDIA_PROJECTION != null) {
-                STORE_DIRECTORY = Environment.getExternalStorageDirectory().getAbsolutePath()+ "/OnePlus/";
-                File storeDirectory = new File(STORE_DIRECTORY);
-                if(!storeDirectory.exists()) {
-                    boolean success = storeDirectory.mkdirs();
-                    if(!success) {
-                        Log.e(TAG, "failed to create file storage directory.");
-                        return;
-                    }
-                }
-
-                DisplayMetrics metrics = getResources().getDisplayMetrics();
-                int density = metrics.densityDpi;
-                int flags = DisplayManager.VIRTUAL_DISPLAY_FLAG_OWN_CONTENT_ONLY | DisplayManager.VIRTUAL_DISPLAY_FLAG_PUBLIC;
-                Display display = getWindowManager().getDefaultDisplay();
-                Point size = new Point();
-                display.getSize(size);
-                mWidth = size.x;
-                mHeight = size.y;
-
-                mImageReader = ImageReader.newInstance(mWidth, mHeight, PixelFormat.RGBA_8888, 2);
-                MEDIA_PROJECTION.createVirtualDisplay("screencap", mWidth, mHeight, density, flags, mImageReader.getSurface(), null, mHandler);
-                mImageReader.setOnImageAvailableListener(new ImageAvailableListener(), mHandler);
-            }
-        }
-        //finish();
-    }
-
-    private void startProjection() {
-        startActivityForResult(mProjectionManager.createScreenCaptureIntent(), REQUEST_CODE);
-    }
-
-    private void stopProjection() {
-        mHandler.post(new Runnable() {
-            @Override
-            public void run() {
-                if(MEDIA_PROJECTION != null) MEDIA_PROJECTION.stop();
-            }
-        });
     }
 }

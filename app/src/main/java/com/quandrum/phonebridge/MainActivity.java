@@ -1,5 +1,6 @@
 package com.quandrum.phonebridge;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -14,6 +15,8 @@ import android.view.View;
 
 public class MainActivity extends ActionBarActivity {
 
+    public static Activity fa;
+
 
     public static final String MyPREFERENCES = "MyPrefs";
 
@@ -25,6 +28,8 @@ public class MainActivity extends ActionBarActivity {
         /**
          * Check if the user is already registered
          */
+
+        fa = this;
 
         SharedPreferences.Editor editor = getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE).edit();
         Display display = getWindowManager().getDefaultDisplay();

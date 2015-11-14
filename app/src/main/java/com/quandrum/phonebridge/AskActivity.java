@@ -34,18 +34,28 @@ import java.io.IOException;
 
 public class AskActivity extends ActionBarActivity {
 
-    ImageButton b1;
     private static final String AUDIO_RECORDER_FILE_EXT_3GP = ".3gp";
     private static final String AUDIO_RECORDER_FILE_EXT_MP4 = ".mp3";
     private static final String AUDIO_RECORDER_FOLDER = "AudioRecorder";
+    ImageButton b1;
+    Context context;
+    int flag = 0;
     private MediaRecorder recorder = null;
     private int currentFormat = 0;
     private int output_formats[] = {MediaRecorder.OutputFormat.MPEG_4, MediaRecorder.OutputFormat.THREE_GPP};
     private String file_exts[] = {AUDIO_RECORDER_FILE_EXT_MP4, AUDIO_RECORDER_FILE_EXT_3GP};
-
-    Context context;
-
-    int flag = 0;
+    private MediaRecorder.OnErrorListener errorListener = new MediaRecorder.OnErrorListener() {
+        @Override
+        public void onError(MediaRecorder mr, int what, int extra) {
+            AppLog.logString("Error: " + what + ", " + extra);
+        }
+    };
+    private MediaRecorder.OnInfoListener infoListener = new MediaRecorder.OnInfoListener() {
+        @Override
+        public void onInfo(MediaRecorder mr, int what, int extra) {
+            AppLog.logString("Warning: " + what + ", " + extra);
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -119,20 +129,6 @@ public class AskActivity extends ActionBarActivity {
             e.printStackTrace();
         }
     }
-
-    private MediaRecorder.OnErrorListener errorListener = new MediaRecorder.OnErrorListener() {
-        @Override
-        public void onError(MediaRecorder mr, int what, int extra) {
-            AppLog.logString("Error: " + what + ", " + extra);
-        }
-    };
-
-    private MediaRecorder.OnInfoListener infoListener = new MediaRecorder.OnInfoListener() {
-        @Override
-        public void onInfo(MediaRecorder mr, int what, int extra) {
-            AppLog.logString("Warning: " + what + ", " + extra);
-        }
-    };
 
     private void stopRecording() {
         if (null != recorder) {
@@ -226,7 +222,7 @@ public class AskActivity extends ActionBarActivity {
                         Toast.makeText(getApplicationContext(), new String(response),
                                 Toast.LENGTH_SHORT).show();
 
-                        Log.e("Hi",new String(response));
+                        Log.e("Hi", new String(response));
 
                         startActivity(new Intent(AskActivity.this, WaitingActivity.class));
                         finish();

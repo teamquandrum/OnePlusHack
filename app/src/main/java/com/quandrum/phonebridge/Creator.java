@@ -19,6 +19,7 @@ public class Creator extends AppCompatActivity {
         /**
          * Create a notification
          */
+        MainActivity.fa.finish();
         NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this);
         mBuilder.setSmallIcon(R.drawable.floating2);
         mBuilder.setContentTitle("Help Session Started!");

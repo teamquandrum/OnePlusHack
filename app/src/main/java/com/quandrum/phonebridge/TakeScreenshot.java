@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
-import android.graphics.BitmapFactory;
 import android.graphics.PixelFormat;
 import android.graphics.Point;
 import android.hardware.display.DisplayManager;
@@ -26,15 +25,13 @@ import android.widget.Toast;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
-import com.parse.ParseException;
-import com.parse.ParseFile;
-import com.parse.ParseObject;
 
 import org.apache.http.Header;
+import org.json.JSONException;
+import org.json.JSONObject;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -155,6 +152,57 @@ public class TakeScreenshot extends Activity {
         });
     }
 
+    private String uploadImage(String path) {
+
+        final String[] myurl = new String[1];
+        AsyncHttpClient client = new AsyncHttpClient();
+
+        RequestParams params = new RequestParams();
+        try {
+            params.put("file", new File(path));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
+
+        client.post("http://amanachpal.pythonanywhere.com", params, new AsyncHttpResponseHandler() {
+
+            @Override
+            public void onStart() {
+                // called before request is started
+            }
+
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, byte[] response) {
+                // called when response HTTP status is "200 OK"
+                Log.e("Success:", new String(response));
+                try {
+                    JSONObject myobj = new JSONObject(new String(response));
+                    Log.e("Yay", myobj.getString("url"));
+                    myurl[0] = myobj.getString("url");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, byte[] errorResponse, Throwable e) {
+                // called when response HTTP status is "4XX" (eg. 401, 403, 404)
+                if (e != null)
+                    Log.e("Failure:", e.toString());
+                if (errorResponse != null)
+                    Log.e("Failure:", new String(errorResponse));
+            }
+
+            @Override
+            public void onRetry(int retryNo) {
+                // called when request is retried
+            }
+        });
+
+        return myurl[0];
+    }
+
     private class ImageAvailableListener implements ImageReader.OnImageAvailableListener {
         @Override
         public void onImageAvailable(ImageReader reader) {
@@ -193,9 +241,11 @@ public class TakeScreenshot extends Activity {
 
                     Toast.makeText(TakeScreenshot.this, path, Toast.LENGTH_SHORT).show();
 
+
+/*
+
                     FileInputStream streamIn = new FileInputStream(path);
                     Bitmap bitmap2 = BitmapFactory.decodeStream(streamIn);
-                    ;
                     ByteArrayOutputStream stream = new ByteArrayOutputStream();
                     bitmap2.compress(Bitmap.CompressFormat.PNG, 20, stream);
                     byte[] data = stream.toByteArray();
@@ -206,14 +256,17 @@ public class TakeScreenshot extends Activity {
                     // Create the ParseFile
                     ParseFile file = new ParseFile("image.png", data);
                     po.put("ImageFile", file);
+*/
 
-                    String url = null;
-                    // Upload the file into Parse Cloud
+                    String url = uploadImage(path);
+
                     try {
+/*
                         file.save();
                         url = file.getUrl();
                         Log.e("URL", url);
                         po.save();
+*/
                         AsyncHttpClient client = new AsyncHttpClient();
                         RequestParams params = new RequestParams();
 
@@ -259,7 +312,7 @@ public class TakeScreenshot extends Activity {
                             }
                         });
 
-                    } catch (ParseException e) {
+                    } catch (Exception e) {
                         e.printStackTrace();
                     } finally {
                         //Register with the Server
